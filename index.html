@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils-lib test</title>
+</head>
+<body>
+  <h1>utils-lib test</h1>
+  <pre id="output"></pre>
+
+  <script type="module">
+    import { capitalize } from './dist/index.js';
+
+    const output = document.getElementById('output');
+
+    function test(description, value) {
+      output.textContent += `✓ ${description} => ${JSON.stringify(value)}\n`;
+    }
+
+    test('capitalize("hello")', capitalize('hello'));
+    test('capitalize("Hello")', capitalize('Hello'));
+    test('capitalize("")', capitalize(''));
+    test('capitalize("a")', capitalize('a'));
+    test('capitalize("ABC")', capitalize('ABC'));
+  </script>
+</body>
+</html>
