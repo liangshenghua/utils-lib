@@ -1,6 +1,6 @@
 # utils-lib
 
-个人 TypeScript 工具函数库模板。使用 `TypeScript + Vitest + tsup`，包管理器使用 `pnpm`。
+工具函数库模板。使用 `TypeScript + Vitest + tsup`，包管理器使用 `pnpm`。
 
 ## 技术栈
 
