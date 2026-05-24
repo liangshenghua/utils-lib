@@ -1,5 +1,5 @@
 import { describe, expect, it, afterEach, vi } from 'vitest';
-import { getNavigationTiming, getPaintTiming } from '../../src/browser/performance.js';
+import { getNavigationTiming, getPaintTiming, getResourceTiming } from '../../src/browser/performance.js';
 
 function mockNavigationEntry(overrides?: Partial<PerformanceNavigationTiming>): PerformanceNavigationTiming {
   const defaults: PerformanceNavigationTiming = {
@@ -123,5 +123,119 @@ describe('getPaintTiming', () => {
     );
 
     expect(getPaintTiming()).toEqual({ fp: 120, fcp: 250 });
+  });
+});
+
+function mockResourceEntry(
+  overrides?: Partial<PerformanceResourceTiming>,
+): PerformanceResourceTiming {
+  const defaults: PerformanceResourceTiming = {
+    name: 'https://example.com/app.js',
+    initiatorType: 'script',
+    duration: 300,
+    transferSize: 50000,
+    startTime: 10,
+    entryType: 'resource',
+    redirectStart: 0,
+    redirectEnd: 0,
+    fetchStart: 10,
+    domainLookupEnd: 50,
+    domainLookupStart: 20,
+    connectStart: 60,
+    connectEnd: 80,
+    secureConnectionStart: 65,
+    requestStart: 100,
+    responseStart: 200,
+    responseEnd: 310,
+    encodedBodySize: 49000,
+    decodedBodySize: 50000,
+    serverTiming: [],
+    workerStart: 0,
+    redirectCount: 0,
+    nextHopProtocol: 'http/1.1',
+    toJSON: () => ({}),
+    ...overrides,
+  } as PerformanceResourceTiming;
+  return defaults;
+}
+
+describe('getResourceTiming', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('Performance API 不可用时返回空数组', () => {
+    vi.spyOn(globalThis, 'performance', 'get').mockReturnValue(undefined as any);
+    expect(getResourceTiming()).toEqual([]);
+  });
+
+  it('无资源条目时返回空数组', () => {
+    vi.spyOn(globalThis.performance, 'getEntriesByType').mockReturnValue([]);
+    expect(getResourceTiming()).toEqual([]);
+  });
+
+  it('不传 filter 时返回所有资源', () => {
+    const entries = [
+      mockResourceEntry({ name: 'https://example.com/a.js', initiatorType: 'script' }),
+      mockResourceEntry({ name: 'https://example.com/b.css', initiatorType: 'link' }),
+    ];
+    vi.spyOn(globalThis.performance, 'getEntriesByType').mockReturnValue(entries as any);
+
+    const result = getResourceTiming();
+    expect(result).toHaveLength(2);
+    expect(result[0]!.name).toBe('https://example.com/a.js');
+    expect(result[1]!.name).toBe('https://example.com/b.css');
+  });
+
+  it('传入 filter 过滤后返回匹配的资源', () => {
+    const entries = [
+      mockResourceEntry({ name: 'https://example.com/a.js', initiatorType: 'script' }),
+      mockResourceEntry({ name: 'https://example.com/style.css', initiatorType: 'link' }),
+      mockResourceEntry({ name: 'https://example.com/b.js', initiatorType: 'script' }),
+    ];
+    vi.spyOn(globalThis.performance, 'getEntriesByType').mockReturnValue(entries as any);
+
+    const result = getResourceTiming(url => url.includes('.js'));
+    expect(result).toHaveLength(2);
+    expect(result.every(r => r.name.includes('.js'))).toBe(true);
+  });
+
+  it('正确映射资源计时字段', () => {
+    const entry = mockResourceEntry({
+      name: 'https://example.com/app.js',
+      initiatorType: 'script',
+      duration: 350,
+      transferSize: 50000,
+      domainLookupEnd: 50,
+      domainLookupStart: 20,
+      responseStart: 200,
+      requestStart: 100,
+    });
+    vi.spyOn(globalThis.performance, 'getEntriesByType').mockReturnValue([entry] as any);
+
+    expect(getResourceTiming()).toEqual([
+      {
+        name: 'https://example.com/app.js',
+        type: 'script',
+        duration: 350,
+        transferSize: 50000,
+        dns: 30,
+        ttfb: 100,
+      },
+    ]);
+  });
+
+  it('耗时字段为负数时返回 0', () => {
+    const entry = mockResourceEntry({
+      domainLookupEnd: 10,
+      domainLookupStart: 50,
+      responseStart: 50,
+      requestStart: 100,
+    });
+    vi.spyOn(globalThis.performance, 'getEntriesByType').mockReturnValue([entry] as any);
+
+    const result = getResourceTiming();
+    expect(result[0]!.dns).toBe(0);
+    expect(result[0]!.ttfb).toBe(0);
   });
 });

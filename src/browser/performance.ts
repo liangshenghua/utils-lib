@@ -30,9 +30,33 @@ export interface PaintTiming {
   fcp: number
 }
 
+/** 资源加载统计 */
+export interface ResourceTimingSummary {
+  /** 资源 URL */
+  name: string
+  /** 资源类型（如 script, link, img, fetch） */
+  type: string
+  /** 总耗时（ms） */
+  duration: number
+  /** 传输大小（byte） */
+  transferSize: number
+  /** DNS 查询耗时（ms） */
+  dns: number
+  /** TTFB（ms） */
+  ttfb: number
+}
+
+/**
+ * 检查浏览器 Performance API 是否可用。
+ *
+ * @returns Performance API 可用时返回 true，否则返回 false
+ * @example
+ * hasPerformance()  // => true
+ */
 function hasPerformance(): boolean {
   return typeof performance !== 'undefined' && typeof performance.getEntriesByType === 'function'
 }
+
 
 /**
  * 获取页面导航性能数据。
@@ -95,4 +119,34 @@ export function getPaintTiming(): PaintTiming | null {
   const fcp = entries.find(e => e.name === 'first-contentful-paint')?.startTime ?? 0
 
   return { fp, fcp }
+}
+
+// ---------------------------------------------------------------------------
+// 资源计时
+// ---------------------------------------------------------------------------
+
+/**
+ * 获取页面资源加载性能数据。
+ *
+ * @param filter - 可选资源 URL 过滤函数
+ * @returns 资源计时信息列表
+ * @example
+ * getResourceTiming(url => url.includes('.js'))
+ * // => [{ name: 'https://example.com/app.js', duration: 300, transferSize: 50000, ... }]
+ */
+export function getResourceTiming(filter?: (url: string) => boolean): ResourceTimingSummary[] {
+  if (!hasPerformance()) return []
+
+  const entries = performance.getEntriesByType('resource') as PerformanceResourceTiming[]
+
+  return entries
+    .filter(entry => !filter || filter(entry.name))
+    .map(entry => ({
+      name: entry.name,
+      type: entry.initiatorType,
+      duration: Math.max(entry.duration, 0),
+      transferSize: entry.transferSize,
+      dns: Math.max(entry.domainLookupEnd - entry.domainLookupStart, 0),
+      ttfb: Math.max(entry.responseStart - entry.requestStart, 0),
+    }))
 }
