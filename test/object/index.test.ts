@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { omitNil, omitBlank } from '../../src/object/index.js';
+import { omitNil, omitBlank, pick, omit } from '../../src/object/index.js';
 
 describe('omitNil', () => {
   it('移除值为 null 的属性', () => {
@@ -58,5 +58,57 @@ describe('omitBlank', () => {
 
   it('嵌套对象不做深层处理', () => {
     expect(omitBlank({ a: { b: null, c: '' } })).toEqual({ a: { b: null, c: '' } });
+  });
+});
+
+describe('pick', () => {
+  it('选取指定属性', () => {
+    expect(pick({ a: 1, b: 2, c: 3 }, ['a', 'c'])).toEqual({ a: 1, c: 3 });
+  });
+
+  it('key 不在对象中时忽略', () => {
+    expect(pick({ a: 1 }, ['a', 'b' as never])).toEqual({ a: 1 });
+  });
+
+  it('空 keys 数组返回空对象', () => {
+    expect(pick({ a: 1, b: 2 }, [])).toEqual({});
+  });
+
+  it('空对象返回空对象', () => {
+    expect(pick({} as Record<string, any>, ['a', 'b'])).toEqual({});
+  });
+
+  it('null 入参返回空对象', () => {
+    expect(pick(null as any, ['a'])).toEqual({});
+  });
+
+  it('undefined 入参返回空对象', () => {
+    expect(pick(undefined as any, ['a'])).toEqual({});
+  });
+});
+
+describe('omit', () => {
+  it('排除指定属性', () => {
+    expect(omit({ a: 1, b: 2, c: 3 }, ['a', 'c'])).toEqual({ b: 2 });
+  });
+
+  it('key 不在对象中时忽略', () => {
+    expect(omit({ a: 1 }, ['b' as never])).toEqual({ a: 1 });
+  });
+
+  it('空 keys 数组返回原对象副本', () => {
+    expect(omit({ a: 1, b: 2 }, [])).toEqual({ a: 1, b: 2 });
+  });
+
+  it('空对象返回空对象', () => {
+    expect(omit({} as Record<string, any>, ['a'])).toEqual({});
+  });
+
+  it('null 入参返回空对象', () => {
+    expect(omit(null as any, ['a'])).toEqual({});
+  });
+
+  it('undefined 入参返回空对象', () => {
+    expect(omit(undefined as any, ['a'])).toEqual({});
   });
 });
