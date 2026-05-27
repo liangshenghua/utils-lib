@@ -1,4 +1,29 @@
 /**
+ * 设置 URL 查询参数并返回新的 URL。
+ *
+ * @param url - 完整的 URL 或 query string（如 `?a=1`）
+ * @param params - 要设置或覆盖的参数键值对，值为 `string | number`
+ * @returns 修改后的 URL
+ * @example
+ * setURLParams('https://example.com/page?a=1', { b: '2' }) // => 'https://example.com/page?a=1&b=2'
+ * setURLParams('https://example.com/page?a=1', { a: '2' }) // => 'https://example.com/page?a=2'
+ * setURLParams('https://example.com/page', { a: '1' })     // => 'https://example.com/page?a=1'
+ * setURLParams('?a=1', { b: '2' })                         // => '?a=1&b=2'
+ */
+export function setURLParams(url: string, params: Record<string, string | number>): string {
+  const idx = url.indexOf('?')
+  const base = idx === -1 ? url : url.slice(0, idx)
+  const searchParams = new URLSearchParams(idx === -1 ? '' : url.slice(idx))
+
+  for (const [key, value] of Object.entries(params)) {
+    searchParams.set(key, String(value))
+  }
+
+  const searchStr = searchParams.toString()
+  return searchStr ? `${base}?${searchStr}` : base
+}
+
+/**
  * 解析 URL 中的所有查询参数并返回键值对对象。
  *
  * @param url - 待解析的完整 URL 或 query string（如 `?a=1&b=2`）
@@ -6,7 +31,7 @@
  * @example
  * getURLParamsAll('?name=jack&age=18')  // => { name: 'jack', age: '18' }
  * getURLParamsAll('https://example.com/page?a=1')  // => { a: '1' }
- * getURLParamsAll('https://example.com')  // => {}
+ * getURLParamsAll('https://example.com/page')  // => {}
  */
 export function getURLParamsAll(url: string): Record<string, string> {
   const params: Record<string, string> = {}
