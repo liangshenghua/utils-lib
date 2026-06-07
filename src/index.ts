@@ -7,3 +7,5 @@ export * from './browser/url.js';
 export * from './time/index.js';
 export * from './browser/errorMonitor.js';
 export * from './browser/watermark.js';
+export * from './function/debounce.js';
+export * from './function/throttle.js';
