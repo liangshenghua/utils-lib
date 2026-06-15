@@ -18,21 +18,21 @@ export function mapTreeData(
   childrenKey: string = 'children',
 ): Record<string, any>[] {
   if (!Array.isArray(treeData) || treeData.length === 0) {
-    return []
+    return [];
   }
 
   return treeData.map((node) => {
     const currentNode: Record<string, any> = {}
     fields.forEach((field) => {
-      currentNode[field] = node[field]
+      currentNode[field] = node[field];
     })
 
-    const children = node[childrenKey]
+    const children = node[childrenKey];
     if (Array.isArray(children) && children.length > 0) {
-      currentNode[childrenKey] = mapTreeData(children, fields, childrenKey)
+      currentNode[childrenKey] = mapTreeData(children, fields, childrenKey);
     }
 
-    return currentNode
+    return currentNode;
   })
 }
 
@@ -58,31 +58,31 @@ export function searchTreeData(
   childrenKey: string = 'children',
 ): Record<string, any>[] {
   if (!Array.isArray(treeData) || treeData.length === 0) {
-    return []
+    return [];
   }
 
-  const fieldList = Array.isArray(searchFields) ? searchFields : [searchFields]
+  const fieldList = Array.isArray(searchFields) ? searchFields : [searchFields];
   if (fieldList.length === 0) {
-    return []
+    return [];
   }
 
   if (!keyword) {
-    return treeData
+    return treeData;
   }
 
-  const formatKeyword = keyword.trim()
+  const formatKeyword = keyword.trim();
   if (!formatKeyword) {
-    return treeData
+    return treeData;
   }
 
   const isMatchedNode = (node: Record<string, any>): boolean =>
     fieldList.some((field) => {
-      const fieldValue = node[field]
-      return fieldValue != null && String(fieldValue).includes(formatKeyword)
+      const fieldValue = node[field];
+      return fieldValue != null && String(fieldValue).includes(formatKeyword);
     })
 
   const cloneTreeNode = (node: Record<string, any>): Record<string, any> => {
-    const children = node[childrenKey]
+    const children = node[childrenKey];
     return Array.isArray(children) && children.length > 0
       ? { ...node, [childrenKey]: children.map((child) => cloneTreeNode(child)) }
       : { ...node }
@@ -91,20 +91,20 @@ export function searchTreeData(
   const loop = (nodes: Record<string, any>[]): Record<string, any>[] =>
     nodes.reduce<Record<string, any>[]>((result, node) => {
       if (isMatchedNode(node)) {
-        result.push(cloneTreeNode(node))
-        return result
+        result.push(cloneTreeNode(node));
+        return result;
       }
 
-      const children = node[childrenKey]
+      const children = node[childrenKey];
       if (Array.isArray(children) && children.length > 0) {
-        const matchedChildren = loop(children)
+        const matchedChildren = loop(children);
         if (matchedChildren.length > 0) {
-          result.push({ ...node, [childrenKey]: matchedChildren })
+          result.push({ ...node, [childrenKey]: matchedChildren });
         }
       }
 
-      return result
-    }, [])
+      return result;
+    }, []);
 
-  return loop(treeData)
+  return loop(treeData);
 }

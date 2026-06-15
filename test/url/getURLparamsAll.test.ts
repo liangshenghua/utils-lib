@@ -35,4 +35,16 @@ describe('getURLParamsAll', () => {
   it('参数值含特殊字符被正确解码', () => {
     expect(getURLParamsAll('?q=hello%20world')).toEqual({ q: 'hello world' });
   });
+
+  it('重复 key 时后面覆盖前面', () => {
+    expect(getURLParamsAll('?a=1&a=2')).toEqual({ a: '2' });
+  });
+
+  it('URL 含 hash 时仍能正常解析', () => {
+    expect(getURLParamsAll('https://example.com/page?a=1#section')).toEqual({ a: '1' });
+  });
+
+  it('无问号的纯字符串返回空对象', () => {
+    expect(getURLParamsAll('hello')).toEqual({});
+  });
 });

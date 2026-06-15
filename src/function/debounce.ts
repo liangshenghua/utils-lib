@@ -19,52 +19,52 @@ export function debounce<T extends (...args: any[]) => any>(
   delay: number,
   options?: { leading?: boolean },
 ): {
-  (...args: Parameters<T>): ReturnType<T> | undefined
-  cancel: () => void
-  flush: () => ReturnType<T> | undefined
+  (...args: Parameters<T>): ReturnType<T> | undefined;
+  cancel: () => void;
+  flush: () => ReturnType<T> | undefined;
 } {
-  const leading = options?.leading ?? false
-  let timer: ReturnType<typeof setTimeout> | null = null
-  let lastArgs: Parameters<T> | null = null
+  const leading = options?.leading ?? false;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let lastArgs: Parameters<T> | null = null;
 
   const debounced = (...args: Parameters<T>): ReturnType<T> | undefined => {
-    const callNow = leading && !timer
-    lastArgs = args
+    const callNow = leading && !timer;
+    lastArgs = args;
 
     if (timer) clearTimeout(timer)
 
     timer = setTimeout(() => {
-      timer = null
+      timer = null;
       if (!leading && lastArgs) {
-        fn(...lastArgs)
+        fn(...lastArgs);
       }
-      lastArgs = null
-    }, delay)
+      lastArgs = null;
+    }, delay);
 
     if (callNow) {
-      return fn(...args)
+      return fn(...args);
     }
-    return undefined
+    return undefined;
   }
 
   debounced.cancel = (): void => {
     if (timer) clearTimeout(timer)
-    timer = null
-    lastArgs = null
+    timer = null;
+    lastArgs = null;
   }
 
   debounced.flush = (): ReturnType<T> | undefined => {
     if (timer) {
-      clearTimeout(timer)
-      timer = null
+      clearTimeout(timer);
+      timer = null;
     }
     if (lastArgs) {
-      const result = fn(...lastArgs)
-      lastArgs = null
-      return result
+      const result = fn(...lastArgs);
+      lastArgs = null;
+      return result;
     }
-    return undefined
+    return undefined;
   }
 
-  return debounced
+  return debounced;
 }

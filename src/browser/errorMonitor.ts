@@ -5,16 +5,16 @@ export type {
   ErrorInfo,
   ErrorMonitorOptions,
   ErrorMonitor,
-} from './errorMonitorTypes.js'
+} from './errorMonitorTypes.js';
 
 import type {
   ErrorInfo,
   ErrorMonitor,
   ErrorMonitorOptions,
-} from './errorMonitorTypes.js'
+} from './errorMonitorTypes.js';
 
 /** 需要监控的资源标签白名单 */
-const RESOURCE_TAGS = ['SCRIPT', 'LINK', 'IMG', 'AUDIO', 'VIDEO', 'IFRAME', 'SOURCE'] as const
+const RESOURCE_TAGS = ['SCRIPT', 'LINK', 'IMG', 'AUDIO', 'VIDEO', 'IFRAME', 'SOURCE'] as const;
 
 /**
  * 是否为资源加载错误事件。
@@ -22,10 +22,10 @@ const RESOURCE_TAGS = ['SCRIPT', 'LINK', 'IMG', 'AUDIO', 'VIDEO', 'IFRAME', 'SOU
  * 通过 target.tagName 判断事件目标是否是已知资源标签。
  */
 function isResourceEvent(event: Event): boolean {
-  const target = event.target
+  const target = event.target;
   if (!target || !((target as HTMLElement).tagName)) return false
-  const tag = (target as HTMLElement).tagName.toUpperCase()
-  return (RESOURCE_TAGS as readonly string[]).includes(tag)
+  const tag = (target as HTMLElement).tagName.toUpperCase();
+  return (RESOURCE_TAGS as readonly string[]).includes(tag);
 }
 
 /**
@@ -54,23 +54,23 @@ export function startErrorMonitor(options?: ErrorMonitorOptions): ErrorMonitor {
     return { getErrors: () => [], stop: () => {} }
   }
 
-  const { js = true, promise = true, resource = true, onError, maxErrors = 100 } = options ?? {}
+  const { js = true, promise = true, resource = true, onError, maxErrors = 100 } = options ?? {};
 
-  const errors: ErrorInfo[] = []
+  const errors: ErrorInfo[] = [];
 
   function collect(info: ErrorInfo): void {
-    errors.push(info)
-    if (errors.length > maxErrors) {
-      errors.shift()
+    errors.push(info);
+    if (maxErrors > 0 && errors.length > maxErrors) {
+      errors.shift();
     }
-    onError?.(info)
+    onError?.(info);
   }
 
   const errorHandler = (event: Event): void => {
     // JS 运行时错误（ErrorEvent 含有 message 属性）
     if ('message' in event && typeof (event as Record<string, unknown>).message === 'string') {
       if (!js) return
-      const evt = event as ErrorEvent
+      const evt = event as ErrorEvent;
       collect({
         type: 'js',
         message: evt.message,
@@ -80,20 +80,20 @@ export function startErrorMonitor(options?: ErrorMonitorOptions): ErrorMonitor {
         error: evt.error,
         timestamp: Date.now(),
       })
-      return
+      return;
     }
 
     // 资源加载失败
     if (!resource) return
     if (!isResourceEvent(event)) return
 
-    const target = event.target as HTMLElement
-    const tag = target.tagName.toUpperCase()
-    let url = ''
+    const target = event.target as HTMLElement;
+    const tag = target.tagName.toUpperCase();
+    let url = '';
     if (tag === 'LINK') {
-      url = (target as HTMLLinkElement).href
+      url = (target as HTMLLinkElement).href;
     } else {
-      url = (target as HTMLScriptElement | HTMLImageElement).src ?? ''
+      url = (target as HTMLScriptElement | HTMLImageElement).src ?? '';
     }
     if (!url) return
 
@@ -114,14 +114,14 @@ export function startErrorMonitor(options?: ErrorMonitorOptions): ErrorMonitor {
     })
   }
 
-  window.addEventListener('error', errorHandler)
-  window.addEventListener('unhandledrejection', rejectionHandler)
+  window.addEventListener('error', errorHandler);
+  window.addEventListener('unhandledrejection', rejectionHandler);
 
   return {
     getErrors: () => [...errors],
     stop: () => {
-      window.removeEventListener('error', errorHandler)
-      window.removeEventListener('unhandledrejection', rejectionHandler)
+      window.removeEventListener('error', errorHandler);
+      window.removeEventListener('unhandledrejection', rejectionHandler);
     },
   }
 }

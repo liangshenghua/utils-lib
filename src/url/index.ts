@@ -11,16 +11,16 @@
  * setURLParams('?a=1', { b: '2' })                         // => '?a=1&b=2'
  */
 export function setURLParams(url: string, params: Record<string, string | number>): string {
-  const idx = url.indexOf('?')
-  const base = idx === -1 ? url : url.slice(0, idx)
-  const searchParams = new URLSearchParams(idx === -1 ? '' : url.slice(idx))
+  const idx = url.indexOf('?');
+  const base = idx === -1 ? url : url.slice(0, idx);
+  const searchParams = new URLSearchParams(idx === -1 ? '' : url.slice(idx));
 
   for (const [key, value] of Object.entries(params)) {
-    searchParams.set(key, String(value))
+    searchParams.set(key, String(value));
   }
 
-  const searchStr = searchParams.toString()
-  return searchStr ? `${base}?${searchStr}` : base
+  const searchStr = searchParams.toString();
+  return searchStr ? `${base}?${searchStr}` : base;
 }
 
 /**
@@ -34,16 +34,18 @@ export function setURLParams(url: string, params: Record<string, string | number
  * getURLParamsAll('https://example.com/page')  // => {}
  */
 export function getURLParamsAll(url: string): Record<string, string> {
-  const params: Record<string, string> = {}
+  const params: Record<string, string> = {};
   try {
-    const idx = url.indexOf('?')
-    if (idx === -1) return params
-    const searchParams = new URLSearchParams(url.slice(idx))
+    const idx = url.indexOf('?');
+    if (idx === -1) return params;
+    const qs = url.slice(idx);
+    const hashIdx = qs.indexOf('#');
+    const searchParams = new URLSearchParams(hashIdx === -1 ? qs : qs.slice(0, hashIdx));
     searchParams.forEach((value, key) => {
-      params[key] = value
-    })
+      params[key] = value;
+    });
   } catch {
     // URL 非法时返回空对象
   }
-  return params
+  return params;
 }

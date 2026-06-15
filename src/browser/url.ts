@@ -1,4 +1,4 @@
-import { setURLParams } from '../url/index.js';
+import { setURLParams } from '../url/index.js';;
 
 /**
  * 设置当前页面 URL 的查询参数（基于 `history.replaceState`），不会刷新页面。
@@ -17,7 +17,7 @@ export function setCurrentURLParams(
   replace = true,
 ): void {
   if (typeof window === 'undefined') return
-  const newUrl = setURLParams(window.location.href, params)
-  const method = replace ? 'replaceState' : 'pushState'
-  window.history[method](null, '', newUrl)
+  const newUrl = setURLParams(window.location.href, params);
+  const method = replace ? 'replaceState' : 'pushState';
+  window.history[method](null, '', newUrl);
 }

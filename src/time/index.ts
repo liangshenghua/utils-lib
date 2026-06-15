@@ -21,31 +21,33 @@ export function truncateTime(
 ): string {
   const match = dateStr.match(
     /^(\d{4}[/-]\d{2}[/-]\d{2})(?:([ T])(\d{2}):(\d{2})(?::(\d{2}))?)?$/,
-  )
+  );
   /*
-    2026-05-20 06:18:18 
-    2026-05-20   ([ T])   (\d{2})   :   (\d{2})   (?:  :   (\d{2})   )?
-    (日期)       空格      06        :    18           :     18         (结束)
-    捕获组1     捕获组2   捕获组3        捕获组4          捕获组5
+    2026-05-20 06:18:18;
+    2026-05-20   ([ T])   (\d{2})   :   (\d{2})   (?:  :   (\d{2})   )?;
+    (日期)       空格      06        :    18           :     18         (结束);
+    捕获组1     捕获组2   捕获组3        捕获组4          捕获组5;
   */
   if (!match) return dateStr
 
-  const datePart = match[1]!
-  const sep = match[2]
-  const hh = match[3]
-  const mm = match[4]
-  const ss = match[5]
+  const datePart = match[1]!;
+  const sep = match[2];
+  const hh = match[3];
+  const mm = match[4];
+  const ss = match[5];
 
   if (!sep || !hh) return datePart
 
   switch (granularity) {
     case 'day':
-      return datePart
+      return datePart;
     case 'hour':
-      return `${datePart}${sep}${hh}`
+      return `${datePart}${sep}${hh}`;
     case 'minute':
-      return `${datePart}${sep}${hh}:${mm!}`
+      return `${datePart}${sep}${hh}:${mm!}`;
     case 'second':
-      return `${datePart}${sep}${hh}:${mm!}:${ss ?? '00'}`
+      return `${datePart}${sep}${hh}:${mm!}:${ss ?? '00'}`;
+    default:
+      return dateStr;
   }
 }

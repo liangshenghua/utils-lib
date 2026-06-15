@@ -1,49 +1,49 @@
 /** 导航计时信息 */
 export interface NavigationTiming {
   /** DNS 查询耗时（ms） */
-  dns: number
+  dns: number;
   /** TCP 连接耗时（ms） */
-  tcp: number
+  tcp: number;
   /** TLS 握手耗时（ms） */
-  tls: number
+  tls: number;
   /** 首字节时间 TTFB（ms） */
-  ttfb: number
+  ttfb: number;
   /** DOM 解析耗时（ms，responseEnd → domInteractive） */
-  domParse: number
+  domParse: number;
   /** DOMContentLoaded 事件耗时（ms） */
-  domContentLoaded: number
+  domContentLoaded: number;
   /** 页面渲染耗时（ms，DCL 结束 → Load 结束） */
-  render: number
+  render: number;
   /** 页面完全加载总耗时（ms） */
-  total: number
+  total: number;
   /** 重定向耗时（ms） */
-  redirect: number
+  redirect: number;
   /** 页面加载类型 */
-  type: 'navigate' | 'reload' | 'back_forward' | 'prerender'
+  type: 'navigate' | 'reload' | 'back_forward' | 'prerender';
 }
 
 /** 渲染计时信息 */
 export interface PaintTiming {
   /** First Paint 首次绘制时间（ms） */
-  fp: number
+  fp: number;
   /** First Contentful Paint 首次内容绘制时间（ms） */
-  fcp: number
+  fcp: number;
 }
 
 /** 资源加载统计 */
 export interface ResourceTimingSummary {
   /** 资源 URL */
-  name: string
+  name: string;
   /** 资源类型（如 script, link, img, fetch） */
-  type: string
+  type: string;
   /** 总耗时（ms） */
-  duration: number
+  duration: number;
   /** 传输大小（byte） */
-  transferSize: number
+  transferSize: number;
   /** DNS 查询耗时（ms） */
-  dns: number
+  dns: number;
   /** TTFB（ms） */
-  ttfb: number
+  ttfb: number;
 }
 
 /**
@@ -54,7 +54,7 @@ export interface ResourceTimingSummary {
  * hasPerformance()  // => true
  */
 function hasPerformance(): boolean {
-  return typeof performance !== 'undefined' && typeof performance.getEntriesByType === 'function'
+  return typeof performance !== 'undefined' && typeof performance.getEntriesByType === 'function';
 }
 
 
@@ -72,10 +72,10 @@ function hasPerformance(): boolean {
 export function getNavigationTiming(): NavigationTiming | null {
   if (!hasPerformance()) return null
 
-  const entries = performance.getEntriesByType('navigation')
+  const entries = performance.getEntriesByType('navigation');
   if (entries.length === 0) return null
 
-  const nav = entries[0] as PerformanceNavigationTiming
+  const nav = entries[0]! as PerformanceNavigationTiming;
 
   return {
     dns: Math.max(nav.domainLookupEnd - nav.domainLookupStart, 0),
@@ -112,13 +112,13 @@ export function getNavigationTiming(): NavigationTiming | null {
 export function getPaintTiming(): PaintTiming | null {
   if (!hasPerformance()) return null
 
-  const entries = performance.getEntriesByType('paint')
+  const entries = performance.getEntriesByType('paint');
   if (entries.length === 0) return null
 
-  const fp = entries.find(e => e.name === 'first-paint')?.startTime ?? 0
-  const fcp = entries.find(e => e.name === 'first-contentful-paint')?.startTime ?? 0
+  const fp = entries.find(e => e.name === 'first-paint')?.startTime ?? 0;
+  const fcp = entries.find(e => e.name === 'first-contentful-paint')?.startTime ?? 0;
 
-  return { fp, fcp }
+  return { fp, fcp };
 }
 
 // ---------------------------------------------------------------------------
@@ -137,7 +137,7 @@ export function getPaintTiming(): PaintTiming | null {
 export function getResourceTiming(filter?: (url: string) => boolean): ResourceTimingSummary[] {
   if (!hasPerformance()) return []
 
-  const entries = performance.getEntriesByType('resource') as PerformanceResourceTiming[]
+  const entries = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
 
   return entries
     .filter(entry => !filter || filter(entry.name))
