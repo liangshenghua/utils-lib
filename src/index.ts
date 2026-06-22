@@ -11,3 +11,4 @@ export * from './browser/watermark.js';
 export * from './browser/copyToClipboard.js';
 export * from './function/debounce.js';
 export * from './function/throttle.js';
+export * from './browser/cookie.js';
