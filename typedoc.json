@@ -1,0 +1,5 @@
+{
+  "entryPointStrategy": "expand",
+  "entryPoints": ["src/"],
+  "exclude": ["src/index.ts", "src/browser/errorMonitorTypes.ts", "src/browser/watermarkTypes.ts"]
+}

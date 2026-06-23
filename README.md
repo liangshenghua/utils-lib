@@ -25,6 +25,9 @@ pnpm typecheck
 # 构建
 pnpm build
 
+# 生成 API 文档
+pnpm docs
+
 # 开发模式（监听文件变化自动构建）
 pnpm dev
 ```
@@ -40,7 +43,20 @@ test/            # 测试目录（与 src 保持镜像结构）
   string/
     capitalize.test.ts
 dist/            # 构建产物（由 pnpm build 生成）
+docs/            # API 文档（由 pnpm docs 生成）
 ```
+
+## 文档
+
+项目使用 [TypeDoc](https://typedoc.org/) 自动从源码 JSDoc 注释生成 API 文档。
+
+```bash
+pnpm docs
+```
+
+生成后打开 `docs/index.html` 即可查看所有函数的分组文档（String / Array / Object / Browser / Time 等），支持搜索和深色/浅色主题切换。
+
+> 配置见项目根目录 `typedoc.json`，使用 `expand` 策略按源文件目录进行模块分组。
 
 ## 如何新增一个工具
 
