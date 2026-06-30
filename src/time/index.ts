@@ -28,7 +28,7 @@ export function truncateTime(
     (日期)       空格      06        :    18           :     18         (结束);
     捕获组1     捕获组2   捕获组3        捕获组4          捕获组5;
   */
-  if (!match) return dateStr
+  if (!match) return dateStr;
 
   const datePart = match[1]!;
   const sep = match[2];
@@ -36,7 +36,7 @@ export function truncateTime(
   const mm = match[4];
   const ss = match[5];
 
-  if (!sep || !hh) return datePart
+  if (!sep || !hh) return datePart;
 
   switch (granularity) {
     case 'day':

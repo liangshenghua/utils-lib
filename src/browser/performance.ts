@@ -57,7 +57,6 @@ function hasPerformance(): boolean {
   return typeof performance !== 'undefined' && typeof performance.getEntriesByType === 'function';
 }
 
-
 /**
  * 获取页面导航性能数据。
  *

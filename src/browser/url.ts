@@ -1,4 +1,4 @@
-import { setURLParams } from '../url/index.js';;
+import { setURLParams } from '../url/index.js';
 
 /**
  * 设置当前页面 URL 的查询参数（基于 `history.replaceState`），不会刷新页面。

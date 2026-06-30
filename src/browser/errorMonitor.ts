@@ -114,13 +114,13 @@ export function startErrorMonitor(options?: ErrorMonitorOptions): ErrorMonitor {
     })
   }
 
-  window.addEventListener('error', errorHandler);
+  window.addEventListener('error', errorHandler, { capture: true });
   window.addEventListener('unhandledrejection', rejectionHandler);
 
   return {
     getErrors: () => [...errors],
     stop: () => {
-      window.removeEventListener('error', errorHandler);
+      window.removeEventListener('error', errorHandler, { capture: true });
       window.removeEventListener('unhandledrejection', rejectionHandler);
     },
   }

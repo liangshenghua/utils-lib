@@ -41,4 +41,16 @@ describe('setURLParams', () => {
   it('空 URL 输入', () => {
     expect(setURLParams('', { a: '1' })).toBe('?a=1');
   });
+
+  it('保留 URL hash 片段', () => {
+    expect(setURLParams('https://example.com/page?a=1#section', { b: '2' })).toBe(
+      'https://example.com/page?a=1&b=2#section',
+    );
+  });
+
+  it('无 query 时保留 hash 片段', () => {
+    expect(setURLParams('https://example.com/page#section', { a: '1' })).toBe(
+      'https://example.com/page?a=1#section',
+    );
+  });
 });

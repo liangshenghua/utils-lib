@@ -11,16 +11,20 @@
  * setURLParams('?a=1', { b: '2' })                         // => '?a=1&b=2'
  */
 export function setURLParams(url: string, params: Record<string, string | number>): string {
-  const idx = url.indexOf('?');
-  const base = idx === -1 ? url : url.slice(0, idx);
-  const searchParams = new URLSearchParams(idx === -1 ? '' : url.slice(idx));
+  const hashIdx = url.indexOf('#');
+  const hash = hashIdx !== -1 ? url.slice(hashIdx) : '';
+  const urlWithoutHash = hashIdx !== -1 ? url.slice(0, hashIdx) : url;
+
+  const idx = urlWithoutHash.indexOf('?');
+  const base = idx === -1 ? urlWithoutHash : urlWithoutHash.slice(0, idx);
+  const searchParams = new URLSearchParams(idx === -1 ? '' : urlWithoutHash.slice(idx));
 
   for (const [key, value] of Object.entries(params)) {
     searchParams.set(key, String(value));
   }
 
   const searchStr = searchParams.toString();
-  return searchStr ? `${base}?${searchStr}` : base;
+  return searchStr ? `${base}?${searchStr}${hash}` : `${base}${hash}`;
 }
 
 /**
