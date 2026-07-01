@@ -3,6 +3,7 @@ export * from './string/mask.js';
 export * from './array/index.js';
 export * from './url/index.js';
 export * from './object/index.js';
+export * from './number/formatNumber.js';
 export * from './browser/performance.js';
 export * from './browser/url.js';
 export * from './time/index.js';
